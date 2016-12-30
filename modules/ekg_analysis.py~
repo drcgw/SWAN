@@ -21,7 +21,6 @@ def ekg_analysis(Data, Settings, Results):
 	#New ekg stuff
 
 	key = Settings['Label']
-		
 	start_time = t.clock()
 	#create results table
 	ekg = pd.DataFrame(columns=['Heartbeats', 'Recording Length (s)','Mean Heartrate', 

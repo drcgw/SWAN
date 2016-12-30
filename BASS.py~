@@ -96,7 +96,7 @@ class BASS_Dataset(object):
 					dataset.Settings['Settings File'] = settings
 					dataset.Settings = load_settings(dataset.Settings)
 				
-				print "\n############   ", dataset.Settings['Label'], "   ############\n" #Display object instance label
+				print "\n############   ", self.Settings['Label'], "   ############\n" #Display object instance label
 				
 				if analysis_mod == 'pleth':
 					pleth_analysis(dataset.Data, dataset.Settings, dataset.Results)
