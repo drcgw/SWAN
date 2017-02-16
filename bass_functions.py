@@ -341,9 +341,9 @@ def load_interact():
     
     Data = {}
     Settings = {}
-    Results ={}
+    Results = {}
 
-    Settings['folder']= raw_input('Full File Path to Folder containing file: ')
+    Settings['folder'] = raw_input('Full File Path to Folder containing file: ')
     Settings['Label'] = raw_input('File Name: ')
     Settings['Output Folder'] = raw_input('Full File Path to Output Folder: ')
     
@@ -423,7 +423,7 @@ def load_settings(Settings):
     
     settings_temp = pd.read_csv(Settings['Settings File'], index_col=0, header=0, sep=',')
 	
-    exclusion_list = ['plots folder', 'folder', 
+    exclusion_list = ['plots folder', 'folder', 'Timestamp',
                       'Sample Rate (s/frame)', 'Output Folder', 
                       'Baseline', 'Baseline-Rolling', 'Settings File', 'Time Scale',
                       'Label', 'File Type', 'HDF Key', 'HDF Channel']
@@ -2203,38 +2203,37 @@ def Save_Results(Data, Settings, Results):
     Save function for all files out of BASS. All files must be present, otherwise it will not save. all files in the same folder with the same name will be saved over, except for the Settings file, which always has a unique name.
     '''
         #Save master files 
-    Results['Peaks-Master'].to_csv(r'%s/%s_Peak_Results.csv'
-                                   %(Settings['Output Folder'], Settings['Label']))
-    Results['Valleys-Master'].to_csv(r'%s/%s_Valley_Results.csv'
-                                   %(Settings['Output Folder'], Settings['Label']))
-    Results['Bursts-Master'].to_csv(r'%s/%s_Bursts_Results.csv'
-                                    %(Settings['Output Folder'], Settings['Label']))
+    Results['Peaks-Master'].to_csv(r'%s/%s_Peak_Results_%s.csv'
+                                   %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
+    Results['Valleys-Master'].to_csv(r'%s/%s_Valley_Results_%s.csv'
+                                   %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
+    Results['Bursts-Master'].to_csv(r'%s/%s_Bursts_Results_%s.csv'
+                                    %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
 
     #Save Master Summary Files
     burst_grouped = Results['Bursts-Master'].groupby(level=0)
     burst_grouped = burst_grouped.describe()
-    burst_grouped.to_csv(r'%s/%s_Bursts_Results_Summary.csv'
-                                           %(Settings['Output Folder'], Settings['Label']))
+    burst_grouped.to_csv(r'%s/%s_Bursts_Results_Summary_%s.csv'
+                                           %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
     
     peak_grouped = Results['Peaks-Master'].groupby(level=0)
     peak_grouped= peak_grouped.describe()
-    peak_grouped.to_csv(r'%s/%s_Peaks_Results_Summary.csv'
-                                           %(Settings['Output Folder'], Settings['Label']))
+    peak_grouped.to_csv(r'%s/%s_Peaks_Results_Summary_%s.csv'
+                                           %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
 
     valley_grouped = Results['Valleys-Master'].groupby(level=0)
     valley_grouped= valley_grouped.describe()
-    valley_grouped.to_csv(r'%s/%s_Valley_Results_Summary.csv'
-                                           %(Settings['Output Folder'], Settings['Label']))
+    valley_grouped.to_csv(r'%s/%s_Valley_Results_Summary_%s.csv'
+                                           %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
 
     #save settings
     Settings_panda = DataFrame.from_dict(Settings, orient='index')
-    now = datetime.datetime.now()
-    colname = 'Settings: ' + str(now)
+    colname = 'Settings: ' + Settings['Timestamp']
     Settings_panda.columns = [colname]
     Settings_panda = Settings_panda.sort()
     Settings_panda.to_csv(r"%s/%s_Settings_%s.csv"%(Settings['Output Folder'], 
                                                  Settings['Label'], 
-                                                 now.strftime('%Y_%m_%d__%H_%M_%S')))
+                                                 Settings['Timestamp']))
     
     print "All results saved to: ", Settings['Output Folder']
     print "Thank you for chosing BASS.py for all your basic analysis needs. Proceed for graphs and event analysis."
@@ -2553,7 +2552,7 @@ def graph_ts(Data, Settings, Results, roi = 'random', mode = 'display', lcpro = 
     
     if mode == 'save':
     
-        plt.savefig(r'%s/%s.pdf'%(Settings['plots folder'],roi))
+        plt.savefig(r'%s/%s_%s.pdf'%(Settings['plots folder'],roi, Settings['Timestamp']))
         plt.close()
     elif mode == 'display':
         plt.show()
@@ -2897,7 +2896,7 @@ def poincare_batch(event_type, meas, Data, Settings, Results):
                 plt.plot(xc, yc, color="r", marker= "+")
                 plt.scatter(x, y, color = 'k', marker = '.')
                 plt.title('Poincare Plot-%s' %key)
-                plt.savefig(r'%s/%s-%s Poincare Plot - %s.pdf'%(new_folder, event_type,meas, key))
+                plt.savefig(r'%s/%s-%s Poincare Plot - %s_%s.pdf'%(new_folder, event_type, meas, key, Settings['Timestamp']))
                 plt.close()
             except:
                 pass
@@ -2906,15 +2905,15 @@ def poincare_batch(event_type, meas, Data, Settings, Results):
         Results['Poincare SD2'][meas] = sd2
 
         try:
-            Results['Poincare SD1'].to_csv(r'%s/%s_Poincare SD1.csv'
-                                               %(new_folder, Settings['Label']))
-            Results['Poincare SD2'].to_csv(r'%s/%s_Poincare SD2.csv'
-                                               %(new_folder, Settings['Label']))
+            Results['Poincare SD1'].to_csv(r'%s/%s_Poincare SD1_%s.csv'
+                                               %(new_folder, Settings['Label'], Settings['Timestamp']))
+            Results['Poincare SD2'].to_csv(r'%s/%s_Poincare SD2_%s.csv'
+                                               %(new_folder, Settings['Label'], Settings['Timestamp']))
         except:
-            Results['Poincare SD1'].to_csv(r'%s\%s_Poincare SD1.csv'
-                                               %(new_folder, Settings['Label']))
-            Results['Poincare SD2'].to_csv(r'%s\%s_Poincare SD2.csv'
-                                               %(new_folder, Settings['Label']))
+            Results['Poincare SD1'].to_csv(r'%s\%s_Poincare SD1_%s.csv'
+                                               %(new_folder, Settings['Label'], Settings['Timestamp']))
+            Results['Poincare SD2'].to_csv(r'%s\%s_Poincare SD2_%s.csv'
+                                               %(new_folder, Settings['Label'], Settings['Timestamp']))
         return Results
     
 #
@@ -3019,9 +3018,9 @@ def psd_signal(version, key, scale, Data, Settings, Results):
     
     plt.xlabel("Frequency (Hz)")
     try:
-        plt.savefig(r'%s/PSD - %s.pdf'%(psd_e_folder, key))
+        plt.savefig(r'%s/PSD - %s_%s.pdf'%(psd_e_folder, key, Settings['Timestamp']))
     except:
-        plt.savefig(r'%s\PSD - %s.pdf'%(psd_e_folder, key))
+        plt.savefig(r'%s\PSD - %s_%s.pdf'%(psd_e_folder, key, Settings['Timestamp']))
     plt.show()
     
 
@@ -3066,11 +3065,11 @@ def psd_signal(version, key, scale, Data, Settings, Results):
         
         Results['PSD-Signal'][key] = results_psd
         try:
-            Results['PSD-Signal'].to_csv(r'%s/%s_PSD_Signal.csv' %(psd_e_folder, Settings['Label']))
-            Settings['PSD-Signal'].to_csv(r'%s/%s_PSD_Signal_Settings.csv' %(psd_e_folder, Settings['Label']))
+            Results['PSD-Signal'].to_csv(r'%s/%s_PSD_Signal_%s.csv' %(psd_e_folder, Settings['Label'], Settings['Timestamp']))
+            Settings['PSD-Signal'].to_csv(r'%s/%s_PSD_Signal_Settings_%s.csv' %(psd_e_folder, Settings['Label'], Settings['Timestamp']))
         except: #for windows
-            Results['PSD-Signal'].to_csv(r'%s\%s_PSD_Signal.csv' %(psd_e_folder, Settings['Label']))
-            Settings['PSD-Signal'].to_csv(r'%s\%s_PSD_Signal_Settings.csv' %(psd_e_folder, Settings['Label']))    
+            Results['PSD-Signal'].to_csv(r'%s\%s_PSD_Signal_%s.csv' %(psd_e_folder, Settings['Label'], Settings['Timestamp']))
+            Settings['PSD-Signal'].to_csv(r'%s\%s_PSD_Signal_Settings_%s.csv' %(psd_e_folder, Settings['Label'], Settings['Timestamp']))    
     except:
         print "Could not calculate area in bands."
 
@@ -3194,9 +3193,9 @@ def psd_event(event_type, meas, key, scale, Data, Settings, Results):
     plt.xlabel("Frequency (Hz)")
     
     try:
-        plt.savefig(r'%s/%s-%s PSD - %s.pdf'%(psd_e_folder, event_type,meas, key))
+        plt.savefig(r'%s/%s-%s PSD - %s_%s.pdf'%(psd_e_folder, event_type,meas, key, Settings['Timestamp']))
     except:
-        plt.savefig(r'%s\%s-%s PSD - %s.pdf'%(psd_e_folder, event_type,meas, key))
+        plt.savefig(r'%s\%s-%s PSD - %s_%s.pdf'%(psd_e_folder, event_type,meas, key, Settings['Timestamp']))
     
     plt.show()
     
@@ -3246,11 +3245,11 @@ def psd_event(event_type, meas, key, scale, Data, Settings, Results):
         
         temp_psd_master = pd.concat(Results['PSD-Event'])
         try:
-            temp_psd_master.to_csv(r'%s/%s_PSD_Events.csv' %(psd_e_folder, Settings['Label']))
-            Settings['PSD-Event'].to_csv(r'%s/%s_PSD_Events_Settings.csv' %(psd_e_folder, Settings['Label']))
+            temp_psd_master.to_csv(r'%s/%s_PSD_Events_%s.csv' %(psd_e_folder, Settings['Label'], Settings['Timestamp']))
+            Settings['PSD-Event'].to_csv(r'%s/%s_PSD_Events_Settings_%s.csv' %(psd_e_folder, Settings['Label'], Settings['Timestamp']))
         except: #for windows
-            temp_psd_master.to_csv(r'%s\%s_PSD_Events.csv' %(psd_e_folder, Settings['Label']))
-            Settings['PSD-Event'].to_csv(r'%s\%s_PSD_Events_Settings.csv' %(psd_e_folder, Settings['Label']))
+            temp_psd_master.to_csv(r'%s\%s_PSD_Events_%s.csv' %(psd_e_folder, Settings['Label'], Settings['Timestamp']))
+            Settings['PSD-Event'].to_csv(r'%s\%s_PSD_Events_Settings_%s.csv' %(psd_e_folder, Settings['Label'], Settings['Timestamp']))
     except:
         print "Could not calculate power in band."
     return Results
@@ -3399,7 +3398,7 @@ def histent_wrapper(event_type, meas, Data, Settings, Results):
                 plt.xlabel('%s' %meas)
                 plt.ylabel('Count')
                 plt.title(r'%s-%s Histogram - %s' %(event_type, meas,key))
-                plt.savefig(r'%s/%s-%s Histogram - %s.pdf'%(histent_folder, event_type,meas, key))
+                plt.savefig(r'%s/%s-%s Histogram - %s_%s.pdf'%(histent_folder, event_type,meas, key, Settings['Timestamp']))
                 plt.close()
             except:
                 pass
@@ -3407,11 +3406,11 @@ def histent_wrapper(event_type, meas, Data, Settings, Results):
         Results['Histogram Entropy'][meas] = temp_histent
 
         try:
-            Results['Histogram Entropy'].to_csv(r'%s/%s_Histogram_Entropy.csv'
-                                               %(histent_folder, Settings['Label']))
+            Results['Histogram Entropy'].to_csv(r'%s/%s_Histogram_Entropy_%s.csv'
+                                               %(histent_folder, Settings['Label'], Settings['Timestamp']))
         except:
-            Results['Histogram Entropy'].to_csv(r'%s\%s_Histogram_Entropy.csv'
-                                               %(histent_folder, Settings['Label']))
+            Results['Histogram Entropy'].to_csv(r'%s\%s_Histogram_Entropy_%s.csv'
+                                               %(histent_folder, Settings['Label'], Settings['Timestamp']))
         return Results
 
 def ap_entropy_wrapper(event_type, meas, Data, Settings, Results):
@@ -3513,9 +3512,9 @@ def ap_entropy_wrapper(event_type, meas, Data, Settings, Results):
         Results['Approximate Entropy'][meas] = temp_apent
 
         try:
-            Results['Approximate Entropy'].to_csv(r'%s/%s_Approximate_Entropy.csv' %(new_folder, Settings['Label']))
+            Results['Approximate Entropy'].to_csv(r'%s/%s_Approximate_Entropy_%s.csv' %(new_folder, Settings['Label'], Settings['Timestamp']))
         except:
-            Results['Approximate Entropy'].to_csv(r'%s\%s_Approximate_Entropy.csv' %(new_folder, Settings['Label']))
+            Results['Approximate Entropy'].to_csv(r'%s\%s_Approximate_Entropy_%s.csv' %(new_folder, Settings['Label'], Settings['Timestamp']))
         return Results
 
 def samp_entropy_wrapper(event_type, meas, Data, Settings, Results):
@@ -3616,9 +3615,9 @@ def samp_entropy_wrapper(event_type, meas, Data, Settings, Results):
         Results['Sample Entropy'][meas] = temp_sampent
 
         try:
-            Results['Sample Entropy'].to_csv(r'%s/%s_Sample_Entropy.csv' %(new_folder, Settings['Label']))
+            Results['Sample Entropy'].to_csv(r'%s/%s_Sample_Entropy_%s.csv' %(new_folder, Settings['Label'], Settings['Timestamp']))
         except:
-            Results['Sample Entropy'].to_csv(r'%s\%s_Sample_Entropy.csv' %(new_folder, Settings['Label']))
+            Results['Sample Entropy'].to_csv(r'%s\%s_Sample_Entropy_%s.csv' %(new_folder, Settings['Label'], Settings['Timestamp']))
 
         return Results
 
@@ -3748,13 +3747,13 @@ def moving_statistics(event_type, meas, window, Data, Settings, Results):
         
         #autosave out these results
         try:
-            Results['Moving Stats'][r'%s-Count'%meas].to_csv(r'%s/%s_%s_Count.csv' %(new_folder, Settings['Label'], meas))
-            Results['Moving Stats'][r'%s-Mean'%meas].to_csv(r'%s/%s_%s_Mean.csv' %(new_folder, Settings['Label'], meas))
-            Results['Moving Stats'][r'%s-Std'%meas].to_csv(r'%s/%s_%s_std.csv' %(new_folder, Settings['Label'], meas))
+            Results['Moving Stats'][r'%s-Count'%meas].to_csv(r'%s/%s_%s_Count_%s.csv' %(new_folder, Settings['Label'], meas, Settings['Timestamp']))
+            Results['Moving Stats'][r'%s-Mean'%meas].to_csv(r'%s/%s_%s_Mean_%s.csv' %(new_folder, Settings['Label'], meas, Settings['Timestamp']))
+            Results['Moving Stats'][r'%s-Std'%meas].to_csv(r'%s/%s_%s_std_%s.csv' %(new_folder, Settings['Label'], meas, Settings['Timestamp']))
         except:
-            Results['Moving Stats'][r'%s-Count'%meas].to_csv(r'%s\%s_%s_Count.csv' %(new_folder, Settings['Label'], meas))
-            Results['Moving Stats'][r'%s-Mean'%meas].to_csv(r'%s\%s_%s_Mean.csv' %(new_folder, Settings['Label'], meas))
-            Results['Moving Stats'][r'%s-Std'%meas].to_csv(r'%s\%s_%s_std.csv' %(new_folder, Settings['Label'], meas))
+            Results['Moving Stats'][r'%s-Count'%meas].to_csv(r'%s\%s_%s_Count_%s.csv' %(new_folder, Settings['Label'], meas, Settings['Timestamp']))
+            Results['Moving Stats'][r'%s-Mean'%meas].to_csv(r'%s\%s_%s_Mean_%s.csv' %(new_folder, Settings['Label'], meas, Settings['Timestamp']))
+            Results['Moving Stats'][r'%s-Std'%meas].to_csv(r'%s\%s_%s_std_%s.csv' %(new_folder, Settings['Label'], meas, Settings['Timestamp']))
         
         print meas, 'Count'
         print Results['Moving Stats'][r'%s-Count'%meas]
@@ -3843,31 +3842,29 @@ def analyze(Data, Settings, Results):
         print "Graphs Saved"
 
     #Save master files 
-    Results['Peaks-Master'].to_csv(r'%s/%s_Peak_Results.csv'
-                                   %(Settings['Output Folder'], Settings['Label']))
-    Results['Bursts-Master'].to_csv(r'%s/%s_Bursts_Results.csv'
-                                    %(Settings['Output Folder'], Settings['Label']))
+    Results['Peaks-Master'].to_csv(r'%s/%s_Peak_Results_%s.csv'
+                                   %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
+    Results['Bursts-Master'].to_csv(r'%s/%s_Bursts_Results_%s.csv'
+                                    %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
 
     #Save Master Summary Files
     burst_grouped = Results['Bursts-Master'].groupby(level=0)
     burst_grouped = burst_grouped.describe()
-    burst_grouped.to_csv(r'%s/%s_Bursts_Results_Summary.csv'
-                                           %(Settings['Output Folder'], Settings['Label']))
+    burst_grouped.to_csv(r'%s/%s_Bursts_Results_Summary_%s.csv'
+                                           %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
     
     peak_grouped = Results['Peaks-Master'].groupby(level=0)
     peak_grouped= peak_grouped.describe()
-    peak_grouped.to_csv(r'%s/%s_Peaks_Results_Summary.csv'
-                                           %(Settings['Output Folder'], Settings['Label']))
+    peak_grouped.to_csv(r'%s/%s_Peaks_Results_Summary_%s.csv'
+                                           %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
 
     #save settings
     Settings_panda = DataFrame.from_dict(Settings, orient='index')
-    now = datetime.datetime.now()
-    colname = 'Settings: ' + str(now)
+    colname = 'Settings: ' + Settings['Timestamp']
     Settings_panda.columns = [colname]
     Settings_panda = Settings_panda.sort_index()
-    Settings_panda.to_csv(r"%s/%s_Settings_%s.csv"%(Settings['Output Folder'], 
-                                                 Settings['Label'], 
-                                                 now.strftime('%Y_%m_%d__%H_%M_%S')))
+    Settings_panda.to_csv(r'%s/%s_Settings_%s.csv'
+    										%(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
 
     end = t.clock()
     run_time = end-start

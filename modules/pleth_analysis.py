@@ -152,7 +152,7 @@ def pleth_analysis(Data, Settings, Results):
 	except:
 		pass
 	
-	pleth.to_csv(r"%s/%s_Pleth.csv"%(Settings['Output Folder'],Settings['Label']))
+	pleth.to_csv(r"%s/%s_Pleth_%s.csv"%(Settings['Output Folder'],Settings['Label'], Settings['Timestamp']))
 	end_time = t.clock()
 	
 	print 'Pleth Analysis Complete: %s sec' %np.round((end_time- start_time), 4)

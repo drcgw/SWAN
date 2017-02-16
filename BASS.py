@@ -49,6 +49,7 @@ class BASS_Dataset(object):
         self.Settings['Output Folder'] = outputDir
         self.Settings['File Type'] = fileType
         self.Settings['Time Scale'] = timeScale
+        self.Settings['Timestamp'] = t.strftime("%Y_%m_%dT%H_%M_%S",t.localtime())
         self.Batch.append(self) #Appends each object instance into a list of datasets (stored as mutable static object in class namespace)
         print "\n############   ", self.Settings['Label'], "   ############\n" #Display object instance label
         self.Data, self.Settings = load_wrapper(self.Data, self.Settings) #Loads data and settings
