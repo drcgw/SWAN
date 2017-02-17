@@ -21,6 +21,7 @@ def ekg_analysis(Data, Settings, Results):
 	#New ekg stuff
 
 	key = Settings['Label']
+		
 	start_time = t.clock()
 	#create results table
 	ekg = pd.DataFrame(columns=['Heartbeats', 'Recording Length (s)','Mean Heartrate', 
@@ -126,7 +127,7 @@ def ekg_analysis(Data, Settings, Results):
 	Results['Approximate Entropy'] #Output approx. ent. dataframe
 	
 	#Save cumulative ekg data
-	ekg.to_csv(r"%s/%s_EKG.csv"%(Settings['Output Folder'],Settings['Label']))
+	ekg.to_csv(r"%s/%s_EKG_%s.csv"%(Settings['Output Folder'],Settings['Label'], Settings['Timestamp']))
 	end_time = t.clock()
 	
 	print 'Heart Rate Varibility Analysis Complete: %s sec' %np.round((end_time- start_time), 4)
