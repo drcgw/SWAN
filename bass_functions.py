@@ -3841,7 +3841,7 @@ def analyze(Data, Settings, Results):
                                   roi = label, lcpro = Settings['Graph LCpro events'])
         print "Graphs Saved"
 
-    #Save master files 
+    #Save master files
     Results['Peaks-Master'].to_csv(r'%s/%s_Peak_Results_%s.csv'
                                    %(Settings['Output Folder'], Settings['Label'], Settings['Timestamp']))
     Results['Bursts-Master'].to_csv(r'%s/%s_Bursts_Results_%s.csv'

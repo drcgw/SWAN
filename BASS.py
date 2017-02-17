@@ -1,3 +1,6 @@
+import time as t
+import sys, os
+
 from bass_functions import *
 from modules.pleth_analysis import pleth_analysis
 from modules.ekg_analysis import ekg_analysis
@@ -46,7 +49,7 @@ class BASS_Dataset(object):
         self.Results = {}        
         self.Settings['folder'] = inputDir
         self.Settings['Label'] = fileName
-        self.Settings['Output Folder'] = outputDir
+        self.Settings['Output Folder'] = outputDir        
         self.Settings['File Type'] = fileType
         self.Settings['Time Scale'] = timeScale
         self.Settings['Timestamp'] = t.strftime("%Y_%m_%dT%H_%M_%S",t.localtime())
@@ -76,11 +79,25 @@ class BASS_Dataset(object):
 		
 		#Run batch if "batch" is True
 		if batch == True:
+					
 			#Sets default "settings" to self.Settings
 			if settings == None:
 				settings = self.Settings
 			
 			for dataset in BASS_Dataset.Batch:
+				
+				#Check output folder for pre-existing results files
+				files = os.listdir(dataset.Settings['Output Folder'])
+				ex = False
+				for f in files:
+					if dataset.Settings['Label'] in f:
+						warning = raw_input("Warning!!! " + dataset.Settings['Label'] + " appears to have already been analyzed. Do you wish to continue (y/n)? ").lower()
+						if (warning == 'n') | (warning == 'no'):
+							ex = True
+						break;
+				if ex == True:
+					continue
+				
 				#Sync settings to those of a specific object instance
 				try:				
 					exclusion_list = ['plots folder', 'folder', 
@@ -106,7 +123,19 @@ class BASS_Dataset(object):
 		
 		#Run a single object if "batch" is False
 		else:
+			
+			#Check output folder for pre-existing results files
+			files = os.listdir(self.Settings['Output Folder'])
+			for f in files:
+				if self.Settings['Label'] in f:
+					warning = raw_input("Warning!!! " + self.Settings['Label'] + " appears to have already been analyzed. Do you wish to continue (y/n)? ").lower()
+					if (warning == 'n') | (warning == 'no'):
+						sys.exit()
+					elif (warning == 'y') | (warning == 'yes'):
+						break
+			
 			if settings != None:
+				
 				#Sync settings to those of a specific object instance
 				try:				
 					exclusion_list = ['plots folder', 'folder', 
